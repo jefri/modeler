@@ -4,16 +4,18 @@
 			inline(property="name", default="Name")
 			button.delete.btn.btn-mini(ng:click="entity._destroy()")
 				i.icon-remove
-		
+
 		.field-list.ui-widget-content
 			.ui-widget-content(ng-repeat="property in entity.properties()")
 				property
-			
+
 			.ui-widget-content
-				a(href='#', ng:click="addProperty()")+ Property
+				a(href='#', ng:click="addProperty()") + Property
 
 		.relationship-list.ui-widget-content
-			relationship.ui-widget-content(ng-repeat="relationship in entity.relationships()")
+			relationship.ui-widget-content(
+				ng-repeat="relationship in entity.relationships()"
+			)
 
 		.ui-widget-content
-			a(href='#', ng:click="addRelationship()")+ Relationship
+			a(href='#', ng:click="addRelationship()") + Relationship

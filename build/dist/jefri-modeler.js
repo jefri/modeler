@@ -1,6 +1,8 @@
 (function() {
   var controller, directive;
 
+  angular.module('modeler', ['jefri', 'jquery', 'jsPlumb', 'ui']);
+
   controller = function($scope, model) {
     return model.on('ready', function() {
       $scope.context = model.context;
@@ -23,11 +25,6 @@
   };
 
   angular.module('modeler').directive('context', ['jQuery', directive]);
-
-}).call(this);
-
-(function() {
-  var directive;
 
   directive = function($, model) {
     return {
@@ -97,10 +94,20 @@
 
   angular.module('modeler').directive('controls', ['jQuery', 'Model', 'JEFRi', directive]);
 
-}).call(this);
-
-(function() {
-  var controller, directive;
+  describe("Directive", function() {
+    beforeEach(module("modeler"));
+    return describe("Controls", function(a) {
+      return it("Has a New Entity button", function() {
+        return inject(function($rootScope, $compile) {
+          var element;
+          element = "<controls></controls>";
+          element = angular.element(element);
+          element = $compile(element);
+          return element = element($rootScope);
+        });
+      });
+    });
+  });
 
   controller = function($scope, Model) {
     var newPropertyId, newRelationshipId;
@@ -146,11 +153,6 @@
 
   angular.module('modeler').directive('entity', ['jQuery', 'JSPlumb', directive]);
 
-}).call(this);
-
-(function() {
-  var directive;
-
   directive = function($, Model) {
     return {
       restrict: 'E',
@@ -160,11 +162,6 @@
   };
 
   angular.module('modeler').directive('property', ['jQuery', 'Model', directive]);
-
-}).call(this);
-
-(function() {
-  var directive;
 
   directive = function($, jsp, jefri) {
     var plumb;

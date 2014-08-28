@@ -8,13 +8,15 @@
 		div.edit(ng:show="editing")
 			| Calling
 			br
-			input.name(jefri:property="relationship.name", type="text") | ()
+			input.name(
+				jefri-property="relationship.name", type="text"
+			)
 			br
 			select(jefri:property="relationship.type")
 				option(value="is_a") Is a
 				option(value="has_a") Has a
 				option(value="has_many") Has many
-			
+
 			select.to_id(jefri:property="relationship.to_id")
 				option(disabled) Entity:
 				option(ng:repeat="entity in context.entities()", value="{{entity.id()}}") {{entity.name()}}

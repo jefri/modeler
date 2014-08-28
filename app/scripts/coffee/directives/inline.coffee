@@ -1,5 +1,5 @@
-Inline = ($) ->
-	restrict: \E
+Inline = ($)->
+	restrict: 'E'
 	template: '<span>
 				<span ng:hide="editing" ng:click="edit()">
 					{{value}}
@@ -11,16 +11,16 @@ Inline = ($) ->
 			</span>'
 	replace: true
 	scope: true
-	controller: !($scope)->
+	controller: ($scope)->
 		$scope.editing = no
-		$scope.edit = !->
+		$scope.edit = ->
 			$scope.editing = yes
-		$scope.save = !->
+		$scope.save = ->
 			$scope.editing = no
-	link: !(scope, element, attrs) ->
-		scope.value = scope.entity[attrs.property]! || attrs.default
-		scope.$watch 'value', !->
+	link: (scope, element, attrs) ->
+		scope.value = scope.entity[attrs.property]() || attrs.default
+		scope.$watch 'value', ->
 			scope.entity[attrs.property](scope.value)
 
-angular.module \modeler
-	.directive \inline, [\jQuery, Inline]
+angular.module 'modeler'
+	.directive 'inline', ['jQuery', Inline]

@@ -7,3 +7,4 @@ test/e2e/js/
 test/e2e/e2e.js
 test/e2e/angular-scenario.js
 test/unit/js/
+node_modules/

@@ -1,122 +1,132 @@
-(function(){
-  var JefriProperty, prepareHandler$ = function (o){
-        o.__event_handler = o.__event_handler || [];
-        o.__event_advisor = o.__event_advisor || [];
-      }, observe$ = function (callback){
-        prepareHandler$(this);
-        this.__event_handler.push(callback);
-      };
-  JefriProperty = function($){
-    return {
-      restrict: 'A',
-      link: function(scope, element, attrs){
-        var ref$, entity, property, update;
-        ref$ = attrs.jefriProperty.split('.'), entity = ref$[0], property = ref$[1];
-        entity = scope[entity];
-        switch (element[0].nodeName) {
-        case 'SELECT':
-          update = function(val){
-            element.find("option").filter(function(){
-              return $(this).attr('value') === val || $(this).text() === val;
-            }).attr('selected', true);
-          };
-          element.change(function(){
-            entity[property](element.val());
-            try {
-              scope.$apply();
-            } catch (e$) {}
-          });
-          observe$.call(entity.modified = entity.modified || {}, function(changed, value){
-            var ref$;
-            if (_(changed).isArray()) {
-              ref$ = changed, changed = ref$[0], value = ref$[1];
-            }
-            if (changed === property) {
-              update(value);
-            }
-          }, entity);
-          setTimeout(function(){
-            return update(entity[property]());
-          }, 0);
-          break;
-        case 'INPUT':
-          if ('radio' === element.attr('type')) {
-            update = function(val){
-              if (val === element.val()) {
-                element.attr('checked', 'checked');
-              }
-            };
-            element.change(function(){
-              entity[property](element.val());
-              try {
-                scope.$apply();
-              } catch (e$) {}
-            });
-            observe$.call(entity.modified = entity.modified || {}, function(changed, value){
-              var ref$;
-              if (_(changed).isArray()) {
-                ref$ = changed, changed = ref$[0], value = ref$[1];
-              }
-              if (changed === property) {
-                update(value);
-              }
-            }, entity);
-            setTimeout(function(){
-              return update(entity[property]());
-            }, 0);
-            return;
-          }
-          // fallthrough
-        case 'INPUT':
-        case 'TEXTAREA':
-          element.val(entity[property]());
-          element.change(function(){
-            entity[property](element.val());
-          });
-          observe$.call(entity.modified = entity.modified || {}, function(){
-            element.val(entity[property]());
-          }, entity);
-          break;
-        case 'SPAN':
-        case 'DIV':
-        case 'P':
-          // fallthrough
-        default:
-          element.text(entity[property]());
-          observe$.call(entity.modified = entity.modified || {}, function(){
-            element.text(entity[property]());
-          }, entity);
-        }
-      }
-    };
-  };
-  angular.module('jefri').directive('jefriProperty', ['jQuery', JefriProperty]);
-}).call(this);
-
-(function(){
+(function() {
   var Inline;
-  Inline = function($){
+
+  Inline = function($) {
     return {
       restrict: 'E',
-      template: '<span><span ng:hide="editing" ng:click="edit()">{{value}}</span><span ng:show="editing"><input type="text" name="value" ng:required ng-model="value" ui-event="{blur:\'save()\'}" /></span></span>',
+      template: '<span> <span ng:hide="editing" ng:click="edit()"> {{value}} </span> <span ng:show="editing"> <input type="text" name="value" ng:required ng-model="value" ui-event="{blur:\'save()\'}" /> </span> </span>',
       replace: true,
       scope: true,
-      controller: function($scope){
+      controller: function($scope) {
         $scope.editing = false;
-        $scope.edit = function(){
-          $scope.editing = true;
+        $scope.edit = function() {
+          return $scope.editing = true;
         };
-        $scope.save = function(){
-          $scope.editing = false;
+        return $scope.save = function() {
+          return $scope.editing = false;
         };
       },
-      link: function(scope, element, attrs){
-        scope.value = scope.entity[attrs.property]() || attrs['default'];
-        scope.$watch('value', function(){
-          scope.entity[attrs.property](scope.value);
+      link: function(scope, element, attrs) {
+        scope.value = scope.entity[attrs.property]() || attrs["default"];
+        return scope.$watch('value', function() {
+          return scope.entity[attrs.property](scope.value);
         });
       }
     };
   };
+
   angular.module('modeler').directive('inline', ['jQuery', Inline]);
+
+}).call(this);
+
+(function() {
+  var JefriProperty;
+
+  JefriProperty = function($) {
+    return {
+      restrict: 'A',
+      link: !function(scope, element, attrs) {
+        var entity, linker, linkers, property, _ref;
+        linkers = {};
+        linkers.SELECT = (function(_this) {
+          return function(entity, property) {
+            var update;
+            update = !function(val) {
+              return element.find("option").filter(function() {
+                var $this;
+                $this = $(this);
+                return $this.attr('value') === val || $this.text() === val;
+              }).attr('selected', true);
+            };
+            element.change(function() {
+              entity[property](element.val());
+              try {
+                return scope.$apply();
+              } catch (_error) {}
+            });
+            entity.on('modified', !function(changed, value) {
+              var _ref;
+              if (_(changed).isArray()) {
+                _ref = changed, changed = _ref[0], value = _ref[1];
+              }
+              if (changed === property) {
+                return update(value);
+              }
+            });
+            return setTimeout((function() {
+              return update(entity[property]());
+            }), 0);
+          };
+        })(this);
+        linkers.INPUT = (function(_this) {
+          return function(entity, property) {
+            var update;
+            if ('radio' === element.attr('type')) {
+              update = function(val) {
+                if (val === element.val()) {
+                  return element.attr('checked', 'checked');
+                }
+              };
+              element.change(function() {
+                entity[property](element.val());
+                try {
+                  return scope.$apply();
+                } catch (_error) {}
+              });
+              entity.on('modified', function(changed, value) {
+                var _ref;
+                if (angular.isArray(changed)) {
+                  _ref = changed, changed = _ref[0], value = _ref[1];
+                }
+                if (changed === property) {
+                  return update(value);
+                }
+              });
+              setTimeout((function() {
+                return update(entity[property]());
+              }), 0);
+              return;
+            }
+            return linkers.TEXTAREA(entity, property);
+          };
+        })(this);
+        linkers.TEXTAREA = (function(_this) {
+          return function(entity, property) {
+            element.val(entity[property]());
+            element.change(function() {
+              return entity[property](element.val());
+            });
+            return entity.on('modified', function() {
+              return element.val(entity[property]());
+            });
+          };
+        })(this);
+        linkers.SPAN = linkers.DIV = linkers.P = linkers.OTHERWISE = (function(_this) {
+          return function(entity, property) {
+            element.text(entity[property]());
+            return entity.on('modified', function() {
+              return element.text(entity[property]());
+            });
+          };
+        })(this);
+        _ref = attrs.jefriProperty.split('.'), entity = _ref[0], property = _ref[1];
+        entity = scope[entity];
+        linker = linkers[element[0].nodeName] || linkers.OTHERWISE;
+        return linker(entity, property);
+      }
+    };
+  };
+
+  angular.module('jefri').directive('jefriProperty', ['jQuery', JefriProperty]);
+
 }).call(this);
